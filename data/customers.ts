@@ -1,0 +1,133 @@
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  balance: number;
+  status: "active" | "inactive" | "overdue";
+  lastInvoice: string;
+  totalSpent: number;
+}
+
+export const customersData: Customer[] = [
+  {
+    id: "CUST-001",
+    name: "Kestnerphysmed, LLC",
+    email: "admin@kestnerphysmed.com",
+    phone: "(555) 234-5678",
+    balance: 12450.0,
+    status: "active",
+    lastInvoice: "2026-03-15",
+    totalSpent: 87200.0,
+  },
+  {
+    id: "CUST-002",
+    name: "Restore Muscle & Joint, LLC",
+    email: "billing@restoremj.com",
+    phone: "(555) 345-6789",
+    balance: 8320.5,
+    status: "active",
+    lastInvoice: "2026-03-18",
+    totalSpent: 45600.0,
+  },
+  {
+    id: "CUST-003",
+    name: "Health First Chiropractic, Inc.",
+    email: "finance@healthfirstchiro.com",
+    phone: "(555) 456-7890",
+    balance: -2150.0,
+    status: "overdue",
+    lastInvoice: "2026-02-28",
+    totalSpent: 62400.0,
+  },
+  {
+    id: "CUST-004",
+    name: "Summit Physical Therapy",
+    email: "accounts@summitpt.com",
+    phone: "(555) 567-8901",
+    balance: 0,
+    status: "active",
+    lastInvoice: "2026-03-20",
+    totalSpent: 34800.0,
+  },
+  {
+    id: "CUST-005",
+    name: "Pinnacle Sports Medicine",
+    email: "billing@pinnaclesm.com",
+    phone: "(555) 678-9012",
+    balance: 5780.25,
+    status: "active",
+    lastInvoice: "2026-03-10",
+    totalSpent: 28900.0,
+  },
+  {
+    id: "CUST-006",
+    name: "Evergreen Wellness Center",
+    email: "admin@evergreenwc.com",
+    phone: "(555) 789-0123",
+    balance: 15200.0,
+    status: "overdue",
+    lastInvoice: "2026-01-15",
+    totalSpent: 91500.0,
+  },
+  {
+    id: "CUST-007",
+    name: "Coastal Rehab Associates",
+    email: "finance@coastalrehab.com",
+    phone: "(555) 890-1234",
+    balance: 3400.0,
+    status: "inactive",
+    lastInvoice: "2025-12-20",
+    totalSpent: 15200.0,
+  },
+  {
+    id: "CUST-008",
+    name: "Metro Orthopedic Group",
+    email: "billing@metroortho.com",
+    phone: "(555) 901-2345",
+    balance: 22100.0,
+    status: "active",
+    lastInvoice: "2026-03-22",
+    totalSpent: 118400.0,
+  },
+  {
+    id: "CUST-009",
+    name: "Riverside Wellness",
+    email: "finance@riversidewellness.com",
+    phone: "(555) 012-3456",
+    balance: 0,
+    status: "active",
+    lastInvoice: "2026-03-24",
+    totalSpent: 52100.0,
+  },
+  {
+    id: "CUST-010",
+    name: "Lakeside Rehab",
+    email: "billing@lakesiderehab.net",
+    phone: "(555) 123-4567",
+    balance: 4500.0,
+    status: "inactive",
+    lastInvoice: "2026-02-10",
+    totalSpent: 12400.0,
+  },
+  {
+    id: "CUST-011",
+    name: "Golden Oak Health",
+    email: "admin@goldenoak.org",
+    phone: "(555) 234-5678",
+    balance: -850.0,
+    status: "active",
+    lastInvoice: "2026-03-25",
+    totalSpent: 9800.0,
+  },
+  {
+    id: "CUST-012",
+    name: "Velocity Sports Physio",
+    email: "accounts@velocitysp.com",
+    phone: "(555) 345-6789",
+    balance: 15400.0,
+    status: "overdue",
+    lastInvoice: "2026-01-05",
+    totalSpent: 42300.0,
+  },
+];
