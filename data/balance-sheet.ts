@@ -1,125 +1,136 @@
-export interface AccountItem {
+export interface FinancialLine {
+  id: string;
   name: string;
-  value: number;
+  amount: number;
+  level: number; // 0 for major category, 1 for sub, 2 for detail
+  type: "item" | "total" | "header";
+  children?: FinancialLine[];
+  isOpen?: boolean;
 }
 
-export interface AccountSection {
-  name: string;
-  items?: AccountItem[];
-  subsections?: AccountSection[];
-  total?: number;
-}
-
-export const balanceSheetData: AccountSection[] = [
+export const balanceSheetData: FinancialLine[] = [
   {
-    name: "Assets",
-    subsections: [
+    id: "assets",
+    name: "ASSETS",
+    amount: 512450.75,
+    level: 0,
+    type: "header",
+    children: [
       {
+        id: "current-assets",
         name: "Current Assets",
-        subsections: [
+        amount: 320450.25,
+        level: 1,
+        type: "header",
+        children: [
           {
-            name: "Bank Accounts",
-            items: [
-              { name: "KeyBank", value: 164432.27 },
-              { name: "Mercury Checking", value: 50849.56 },
-              { name: "PNC Bank", value: 16488.86 },
-              { name: "TD Bank", value: -43387.66 },
-            ],
-            total: 188383.03,
+            id: "cash-bank",
+            name: "Cash and Bank Accounts",
+            amount: 185200.50,
+            level: 2,
+            type: "header",
+            children: [
+              { id: "checking", name: "Operating Checking (1234)", amount: 145200.00, level: 3, type: "item" },
+              { id: "savings", name: "Savings / Reserve (5678)", amount: 40000.50, level: 3, type: "item" },
+            ]
           },
           {
-            name: "Accounts Receivable",
-            items: [{ name: "Accounts Receivable (A/R)", value: 225908.11 }],
-            total: 225908.11,
+            id: "ar",
+            name: "Accounts Receivable (A/R)",
+            amount: 112450.75,
+            level: 2,
+            type: "header",
+            children: [
+              { id: "ar-trade", name: "Accounts Receivable", amount: 112450.75, level: 3, type: "item" },
+            ]
           },
           {
+            id: "other-current",
             name: "Other Current Assets",
-            items: [
-              { name: "Inventory Asset", value: 12750.0 },
-              { name: "Prepaid Expenses", value: 8400.0 },
-              { name: "Undeposited Funds", value: 3250.0 },
-            ],
-            total: 24400.0,
+            amount: 22799.00,
+            level: 2,
+            type: "header",
+            children: [
+              { id: "prepaid", name: "Prepaid Insurance", amount: 12500.00, level: 3, type: "item" },
+              { id: "supplies", name: "Office Supplies", amount: 4299.00, level: 3, type: "item" },
+              { id: "undeposited", name: "Undeposited Funds", amount: 6000.00, level: 3, type: "item" },
+            ]
           },
-        ],
-        total: 438691.14,
+          { id: "total-current-assets", name: "Total Current Assets", amount: 320450.25, level: 1, type: "total" }
+        ]
       },
       {
+        id: "fixed-assets",
         name: "Fixed Assets",
-        subsections: [
-          {
-            name: "Property & Equipment",
-            items: [
-              { name: "Office Equipment", value: 24500.0 },
-              { name: "Furniture & Fixtures", value: 18200.0 },
-              { name: "Computer Equipment", value: 31750.0 },
-              { name: "Accumulated Depreciation", value: -22150.0 },
-            ],
-            total: 52300.0,
-          },
-        ],
-        total: 52300.0,
+        amount: 192000.50,
+        level: 1,
+        type: "header",
+        children: [
+          { id: "equipment", name: "Furniture and Equipment", amount: 145000.00, level: 2, type: "item" },
+          { id: "accum-deprec", name: "Accumulated Depreciation", amount: -45000.00, level: 2, type: "item" },
+          { id: "leasehold", name: "Leasehold Improvements", amount: 92000.50, level: 2, type: "item" },
+          { id: "total-fixed-assets", name: "Total Fixed Assets", amount: 192000.50, level: 1, type: "total" }
+        ]
       },
-    ],
-    total: 490991.14,
+      { id: "total-assets", name: "TOTAL ASSETS", amount: 512450.75, level: 0, type: "total" }
+    ]
   },
   {
-    name: "Liabilities",
-    subsections: [
+    id: "liabilities-equity",
+    name: "LIABILITIES AND EQUITY",
+    amount: 512450.75,
+    level: 0,
+    type: "header",
+    children: [
       {
-        name: "Current Liabilities",
-        subsections: [
+        id: "liabilities",
+        name: "Liabilities",
+        amount: 213752.81,
+        level: 1,
+        type: "header",
+        children: [
           {
-            name: "Accounts Payable",
-            items: [{ name: "Accounts Payable (A/P)", value: 47832.45 }],
-            total: 47832.45,
+            id: "current-liabilities",
+            name: "Current Liabilities",
+            amount: 85452.81,
+            level: 2,
+            type: "header",
+            children: [
+              { id: "ap", name: "Accounts Payable (A/P)", amount: 42450.75, level: 3, type: "item" },
+              { id: "credit-cards", name: "Credit Cards", amount: 12502.06, level: 3, type: "item" },
+              { id: "payroll-tax", name: "Payroll Tax Payable", amount: 8500.00, level: 3, type: "item" },
+              { id: "sales-tax", name: "Sales Tax Payable", amount: 22000.00, level: 3, type: "item" },
+            ]
           },
           {
-            name: "Credit Cards",
-            items: [
-              { name: "Chase Business Card", value: 5621.33 },
-              { name: "Amex Platinum", value: 12488.92 },
-            ],
-            total: 18110.25,
+            id: "long-term-liabilities",
+            name: "Long-Term Liabilities",
+            amount: 128300.00,
+            level: 2,
+            type: "header",
+            children: [
+              { id: "loan-sba", name: "SBA Loan", amount: 95000.00, level: 3, type: "item" },
+              { id: "notes-payable", name: "Notes Payable", amount: 33300.00, level: 3, type: "item" },
+            ]
           },
-          {
-            name: "Other Current Liabilities",
-            items: [
-              { name: "Payroll Liabilities", value: 15230.0 },
-              { name: "Sales Tax Payable", value: 4820.5 },
-              { name: "Accrued Expenses", value: 8900.0 },
-            ],
-            total: 28950.5,
-          },
-        ],
-        total: 94893.2,
+          { id: "total-liabilities", name: "Total Liabilities", amount: 213752.81, level: 1, type: "total" }
+        ]
       },
       {
-        name: "Long-Term Liabilities",
-        items: [
-          { name: "Business Loan (SBA)", value: 85000.0 },
-          { name: "Equipment Financing", value: 12400.0 },
-        ],
-        total: 97400.0,
+        id: "equity",
+        name: "Equity",
+        amount: 298697.94,
+        level: 1,
+        type: "header",
+        children: [
+          { id: "capital", name: "Owner's Capital", amount: 150000.00, level: 2, type: "item" },
+          { id: "draws", name: "Owner's Draws", amount: -25000.00, level: 2, type: "item" },
+          { id: "retained", name: "Retained Earnings", amount: 156437.94, level: 2, type: "item" },
+          { id: "net-income", name: "Net Income", amount: 17260.00, level: 2, type: "item" },
+          { id: "total-equity", name: "Total Equity", amount: 298697.94, level: 1, type: "total" }
+        ]
       },
-    ],
-    total: 192293.2,
-  },
-  {
-    name: "Equity",
-    subsections: [
-      {
-        name: "Owner's Equity",
-        items: [
-          { name: "Opening Balance Equity", value: 150000.0 },
-          { name: "Owner's Investment", value: 75000.0 },
-          { name: "Owner's Draw", value: -24000.0 },
-          { name: "Retained Earnings", value: 62197.94 },
-          { name: "Net Income", value: 35500.0 },
-        ],
-        total: 298697.94,
-      },
-    ],
-    total: 298697.94,
-  },
+      { id: "total-liabilities-equity", name: "TOTAL LIABILITIES AND EQUITY", amount: 512450.75, level: 0, type: "total" }
+    ]
+  }
 ];

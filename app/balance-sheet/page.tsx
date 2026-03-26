@@ -2,40 +2,30 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import ReportFilters from "@/components/ReportFilters";
-import ReportTable from "@/components/ReportTable";
-import {
-  SkeletonReportFilters,
-  SkeletonReportTable,
-} from "@/components/SkeletonLoader";
+import FinancialReport from "@/components/FinancialReport";
+import { SkeletonReportTable } from "@/components/SkeletonLoader";
 import { balanceSheetData } from "@/data/balance-sheet";
 
 export default function BalanceSheetPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 900);
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
       <Header title="Balance Sheet" />
-      <div className="flex-1 p-8 space-y-6">
+      <div className="flex-1 p-8 flex flex-col min-h-0 min-w-0">
         {isLoading ? (
-          <>
-            <SkeletonReportFilters />
-            <SkeletonReportTable />
-          </>
+          <SkeletonReportTable />
         ) : (
-          <>
-            <ReportFilters />
-            <ReportTable
-              data={balanceSheetData}
-              reportTitle="Balance Sheet"
-              valueLabel="Total"
-            />
-          </>
+          <FinancialReport 
+            data={balanceSheetData} 
+            title="Balance Sheet" 
+            subtitle="As of March 25, 2026" 
+          />
         )}
       </div>
     </>
