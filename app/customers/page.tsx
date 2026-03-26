@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { SkeletonTable } from "@/components/SkeletonLoader";
-import { customersData } from "@/data/customers";
+import { Customer } from "@/data/customers";
 import { Plus, MoreHorizontal, Download } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import AdvancedFilterToolbar from "@/components/AdvancedFilterToolbar";
 import AddCustomerModal from "@/components/AddCustomerModal";
 import { formatCurrency, cn } from "@/lib/utils";
+import { parseQBCustomers } from "@/lib/quickbooks-parser";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -18,11 +19,30 @@ export default function CustomersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customers, setCustomers] = useState(customersData);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
+    async function fetchCustomers() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const res = await fetch("http://localhost:3000/customers");
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        const data = await res.json();
+        
+        const parsedCustomers = parseQBCustomers(data);
+        setCustomers(parsedCustomers);
+      } catch (err: any) {
+        console.error("Error fetching customers API:", err);
+        setError("Failed to load real data. Please ensure the backend is running at localhost:3000 and CORS is configured.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchCustomers();
   }, []);
 
   const filteredCustomers = customers.filter((c) => {
@@ -48,6 +68,39 @@ export default function CustomersPage() {
     setCustomers([customer, ...customers]);
   };
 
+  const handleExportCSV = () => {
+    if (filteredCustomers.length === 0) return;
+    
+    const headers = ["ID", "Name", "Email", "Phone", "Status", "Balance", "Lifetime Spent", "Last Invoice Date"];
+    const csvRows = [headers.join(",")];
+    
+    for (const c of filteredCustomers) {
+      const escape = (str: string | number) => `"${String(str || "").replace(/"/g, '""')}"`;
+      const row = [
+        escape(c.id),
+        escape(c.name),
+        escape(c.email),
+        escape(c.phone),
+        escape(c.status),
+        escape(c.balance),
+        escape(c.totalSpent),
+        escape(c.lastInvoice)
+      ].join(",");
+      csvRows.push(row);
+    }
+    
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `customers_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const statusBadge = (status: string) => {
     const styles: Record<string, string> = {
       active: "bg-primary/10 text-primary-dark border-primary/20",
@@ -69,6 +122,7 @@ export default function CustomersPage() {
            </div>
            <div className="flex items-center gap-3">
               <button 
+                onClick={handleExportCSV}
                 className="h-10 px-4 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
               >
                 <Download size={14} className="text-gray-400" />
@@ -106,6 +160,11 @@ export default function CustomersPage() {
         {/* Table/List View */}
         {isLoading ? (
           <SkeletonTable />
+        ) : error && customers.length === 0 ? (
+          <div className="bg-red-50 text-red-600 p-6 rounded-md font-medium flex items-center gap-3 border border-red-200 mt-4">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {error}
+          </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
             <div className="overflow-x-auto min-h-[500px]">

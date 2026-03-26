@@ -82,6 +82,38 @@ export default function InvoicesPage() {
     return configs[status.toLowerCase()] || configs.draft;
   };
 
+  const handleExportCSV = () => {
+    if (filteredInvoices.length === 0) return;
+    
+    const headers = ["Invoice Number", "Customer", "Date", "Due Date", "Status", "Total Amount", "Balance Due"];
+    const csvRows = [headers.join(",")];
+    
+    for (const inv of filteredInvoices) {
+      const escape = (str: string | number) => `"${String(str || "").replace(/"/g, '""')}"`;
+      const row = [
+        escape(inv.invoiceNumber),
+        escape(inv.customer),
+        escape(inv.date),
+        escape(inv.dueDate),
+        escape(inv.status),
+        escape(inv.amount),
+        escape(inv.balance)
+      ].join(",");
+      csvRows.push(row);
+    }
+    
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `invoices_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <Header title="Invoices" />
@@ -95,7 +127,10 @@ export default function InvoicesPage() {
               <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Track billing, payments, and revenue lifecycles</p>
            </div>
            <div className="flex items-center gap-3">
-              <button className="h-10 px-4 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2">
+              <button 
+                onClick={handleExportCSV}
+                className="h-10 px-4 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
+              >
                 <Download size={14} className="text-gray-400" />
                 Export Ledger
               </button>

@@ -1,6 +1,7 @@
 import { FinancialLine } from "@/data/balance-sheet";
 import { DetailedFinancialData, AccountDetail, Transaction } from "@/data/financial-details";
 import { Invoice } from "@/data/invoices";
+import { Customer } from "@/data/customers";
 
 export function parseQBBalanceSheet(qbData: any): FinancialLine[] {
   const root = qbData.data ? qbData.data : qbData;
@@ -163,6 +164,32 @@ export function parseQBInvoices(qbData: any): Invoice[] {
       amount: amount,
       balance: balance,
       status: status
+    };
+  });
+}
+
+export function parseQBCustomers(qbData: any): Customer[] {
+  const customers = qbData?.QueryResponse?.Customer || qbData?.data?.QueryResponse?.Customer || qbData?.Customer || [];
+  
+  return customers.map((c: any) => {
+    // Determine status. QuickBooks uses Active (boolean). 
+    // We can guess "overdue" if balance is very high or just stick to active/inactive.
+    let status: "active" | "inactive" | "overdue" = "active";
+    if (c.Active === false) {
+      status = "inactive";
+    } else if (c.Balance > 0) {
+      status = "active"; // Could be overdue, but can't be sure without invoice data
+    }
+
+    return {
+      id: c.Id,
+      name: c.DisplayName || c.FullyQualifiedName || c.CompanyName || `${c.GivenName || ''} ${c.FamilyName || ''}`.trim() || "Unknown",
+      email: c.PrimaryEmailAddr?.Address || "",
+      phone: c.PrimaryPhone?.FreeFormNumber || c.Mobile?.FreeFormNumber || "",
+      balance: c.Balance || 0,
+      status: status,
+      lastInvoice: c.MetaData?.LastUpdatedTime ? c.MetaData.LastUpdatedTime.split('T')[0] : "",
+      totalSpent: c.Balance || 0
     };
   });
 }
