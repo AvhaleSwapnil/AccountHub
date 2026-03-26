@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import FinancialReport from "@/components/FinancialReport";
 import { SkeletonReportTable } from "@/components/SkeletonLoader";
 import { balanceSheetData } from "@/data/balance-sheet";
+import { balanceSheetDetailData } from "@/data/financial-details";
 
 export default function BalanceSheetPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function BalanceSheetPage() {
         ) : (
           <FinancialReport 
             data={balanceSheetData} 
+            detailedData={balanceSheetDetailData}
             title="Balance Sheet" 
             subtitle="As of March 25, 2026" 
           />

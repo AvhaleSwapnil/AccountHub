@@ -54,7 +54,7 @@ export function SkeletonReportTable() {
           <div key={i} className="flex justify-between items-center">
             <div
               className="skeleton h-3"
-              style={{ width: `${140 + Math.random() * 100}px`, marginLeft: `${(i % 3) * 24}px` }}
+              style={{ width: `${160 + (i * 15) % 80}px`, marginLeft: `${(i % 3) * 24}px` }}
             />
             <div className="skeleton h-3 w-20" />
           </div>

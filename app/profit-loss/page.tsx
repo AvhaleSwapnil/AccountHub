@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import FinancialReport from "@/components/FinancialReport";
 import { SkeletonReportTable } from "@/components/SkeletonLoader";
 import { profitLossData } from "@/data/profit-loss";
+import { profitLossDetailData } from "@/data/financial-details";
 
 export default function ProfitLossPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function ProfitLossPage() {
         ) : (
           <FinancialReport 
             data={profitLossData} 
+            detailedData={profitLossDetailData}
             title="Profit and Loss" 
             subtitle="January - March, 2026" 
           />
