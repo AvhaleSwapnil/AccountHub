@@ -13,7 +13,7 @@ export default function BalanceSheetPage() {
   return (
     <>
       <Header title="Balance Sheet" />
-      <div className="flex-1 p-8 flex flex-col min-h-0 min-w-0">
+      <div className="flex-1 p-6 flex flex-col min-h-0 min-w-0">
         {isLoading ? (
           <SkeletonReportTable />
         ) : error && reportData.length === 0 ? (

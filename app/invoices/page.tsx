@@ -36,10 +36,10 @@ export default function InvoicesPage() {
 
   const statusConfig = (status: string) => {
     const configs: Record<string, { label: string; icon: any; color: string }> = {
-      paid: { label: "Fully Paid", icon: CheckCircle2, color: "bg-primary/10 text-primary-dark border-primary/20" },
-      open: { label: "Outstanding", icon: Clock, color: "bg-blue-50 text-blue-600 border-blue-100" },
-      overdue: { label: "Overdue", icon: AlertCircle, color: "bg-negative/10 text-negative border-negative/20" },
-      draft: { label: "Draft", icon: FileText, color: "bg-gray-100 text-gray-500 border-gray-200" },
+      paid: { label: "Paid", icon: CheckCircle2, color: "bg-[#8bc53d] text-white border-transparent" },
+      open: { label: "Open", icon: Clock, color: "bg-[#00648F] text-white border-transparent" },
+      overdue: { label: "Overdue", icon: AlertCircle, color: "bg-[#C62026] text-white border-transparent" },
+      draft: { label: "Draft", icon: FileText, color: "bg-[#6D6E71] text-white border-transparent" },
     };
     return configs[status.toLowerCase()] || configs.draft;
   };
@@ -47,7 +47,7 @@ export default function InvoicesPage() {
   const handleExportCSV = () => {
     exportToCSV(
       filteredInvoices,
-      ["Invoice Number", "Customer", "Date", "Due Date", "Status", "Total Amount", "Balance Due"],
+      ["Invoice Number", "Client", "Date", "Due Date", "Status", "Total Amount", "Balance Due"],
       "invoices_export",
       (inv) => [inv.invoiceNumber, inv.customer, inv.date, inv.dueDate, inv.status, inv.amount, inv.balance]
     );
@@ -56,32 +56,25 @@ export default function InvoicesPage() {
   return (
     <>
       <Header title="Invoices" />
-      <div className="flex-1 p-8 space-y-6">
-
+      <div className="flex-1 p-6 space-y-5">
 
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[26px] font-black text-gray-900 tracking-tighter mb-0.5">Accounts Receivable</h1>
-          </div>
+          <h1 className="text-[18px] font-semibold text-text-primary">Accounts Receivable</h1>
           <div className="flex items-center gap-3">
             <button
               onClick={handleExportCSV}
-              className="h-10 px-4 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
+              className="h-10 px-4 bg-bg-card border border-border rounded-md text-[14px] font-medium text-text-secondary hover:bg-bg-page transition-all flex items-center gap-2"
             >
-              <Download size={14} className="text-gray-400" />
+              <Download size={16} className="text-text-muted" />
               Export Ledger
-            </button>
-            <button className="h-10 px-6 bg-primary text-white rounded-xl text-[12px] font-black uppercase tracking-widest shadow-lg hover:bg-primary-dark transition-all flex items-center gap-2 active:scale-95">
-              <Plus size={16} />
-              Create Invoice
             </button>
           </div>
         </div>
 
         {/* Filters */}
         <AdvancedFilterToolbar
-          placeholder="Search by invoice # or customer..."
+          placeholder="Search by invoice # or client..."
           onSearch={setSearchTerm}
           onFilterChange={(key, val) => {
             if (key === "status") setStatusFilter(val);
@@ -98,7 +91,7 @@ export default function InvoicesPage() {
           }}
           statusOptions={[
             { label: "Paid", value: "paid" },
-            { label: "Outstanding", value: "open" },
+            { label: "Open", value: "open" },
             { label: "Overdue", value: "overdue" },
             { label: "Draft", value: "draft" }
           ]}
@@ -116,75 +109,75 @@ export default function InvoicesPage() {
           <SkeletonTable />
         ) : error && invoices.length === 0 ? (
           <div className="bg-red-50 text-red-600 p-6 rounded-md font-medium flex items-center gap-3 border border-red-200">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <AlertCircle size={20} />
             {error}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+          <div className="bg-bg-card rounded-xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="overflow-x-auto min-h-[500px]">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-100">
-                    <th className="text-left text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-8">Audit Ref & Date</th>
-                    <th className="text-left text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-6">Customer / Client</th>
-                    <th className="text-left text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-6">Due Date</th>
-                    <th className="text-right text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-6">Total Amount</th>
-                    <th className="text-right text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-6">Balance Due</th>
-                    <th className="text-center text-[12px] font-semibold text-slate-500 uppercase tracking-wider py-4 px-6">Lifecycle Status</th>
-                    <th className="w-16" />
+                  <tr className="border-b border-border">
+                    <th className="text-left text-[14px] font-medium text-text-muted py-3 px-6">Invoice & Date</th>
+                    <th className="text-left text-[14px] font-medium text-text-muted py-3 px-4">Client</th>
+                    <th className="text-left text-[14px] font-medium text-text-muted py-3 px-4">Due Date</th>
+                    <th className="text-right text-[14px] font-medium text-text-muted py-3 px-4">Amount</th>
+                    <th className="text-right text-[14px] font-medium text-text-muted py-3 px-4">Balance</th>
+                    <th className="text-center text-[14px] font-medium text-text-muted py-3 px-4">Status</th>
+                    <th className="w-12" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-border">
                   {paginatedInvoices.length > 0 ? (
                     paginatedInvoices.map((invoice) => {
                       const status = statusConfig(invoice.status);
                       const StatusIcon = status.icon;
                       return (
-                        <tr key={invoice.id} className="group hover:bg-slate-50/50 transition-colors duration-200">
-                          <td className="py-4 px-8">
-                            <div className="flex flex-col text-slate-700">
-                              <span className="text-[14px] font-semibold leading-tight">#{invoice.invoiceNumber}</span>
-                              <span className="text-[12px] font-medium text-slate-400">
+                        <tr key={invoice.id} className="group hover:bg-bg-page/50 transition-colors duration-200">
+                          <td className="py-3 px-6">
+                            <div className="flex flex-col">
+                              <span className="text-[14px] font-medium text-text-primary">#{invoice.invoiceNumber}</span>
+                              <span className="text-[12px] text-text-muted">
                                 {new Date(invoice.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                               </span>
                             </div>
                           </td>
-                          <td className="py-4 px-6">
-                            <span className="text-[14px] font-semibold text-slate-700">{invoice.customer}</span>
+                          <td className="py-3 px-4">
+                            <span className="text-[14px] text-text-secondary">{invoice.customer}</span>
                           </td>
-                          <td className="py-4 px-6">
+                          <td className="py-3 px-4">
                             <span className={cn(
-                              "text-[13px] font-medium",
-                              invoice.status === "overdue" ? "text-negative font-semibold" : "text-slate-500"
+                              "text-[14px] text-text-secondary",
+                              invoice.status === "overdue" && "text-negative font-medium"
                             )}>
                               {new Date(invoice.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                             </span>
                           </td>
-                          <td className="py-4 px-6 text-right tabular-nums">
-                            <span className="text-[14px] font-medium text-slate-700">
+                          <td className="py-3 px-4 text-right tabular-nums">
+                            <span className="text-[14px] font-medium text-text-primary">
                               {formatCurrency(invoice.amount)}
                             </span>
                           </td>
-                          <td className="py-4 px-6 text-right tabular-nums">
+                          <td className="py-3 px-4 text-right tabular-nums">
                             <span className={cn(
                               "text-[14px] font-medium",
-                              invoice.balance > 0 ? "text-slate-700" : "text-slate-300"
+                              invoice.balance > 0 ? "text-text-primary" : "text-text-muted"
                             )}>
                               {formatCurrency(invoice.balance)}
                             </span>
                           </td>
-                          <td className="py-4 px-6 text-center">
+                          <td className="py-3 px-4 text-center">
                             <div className={cn(
-                              "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm",
+                              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium capitalize",
                               status.color
                             )}>
                               <StatusIcon size={12} />
                               {status.label}
                             </div>
                           </td>
-                          <td className="py-4 px-6 text-center">
-                            <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all cursor-pointer">
-                              <MoreHorizontal size={18} />
+                          <td className="py-3 px-4 text-center">
+                            <button className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-page rounded-md transition-all cursor-pointer">
+                              <MoreHorizontal size={16} />
                             </button>
                           </td>
                         </tr>
@@ -192,10 +185,10 @@ export default function InvoicesPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={7} className="py-24 text-center">
-                        <div className="flex flex-col items-center gap-3">
-                          <p className="text-[14px] font-black text-gray-900 uppercase tracking-tighter">No Invoices Found</p>
-                          <p className="text-[12px] text-gray-400">Adjust your filters to refine the search</p>
+                      <td colSpan={7} className="py-20 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <p className="text-[14px] font-semibold text-text-primary">No Invoices Found</p>
+                          <p className="text-[12px] text-text-muted">Adjust your filters to refine the search</p>
                         </div>
                       </td>
                     </tr>
@@ -204,7 +197,7 @@ export default function InvoicesPage() {
               </table>
             </div>
 
-            <div className="p-4 bg-gray-50/30 border-t border-gray-100">
+            <div className="p-4 bg-bg-page/30 border-t border-border">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

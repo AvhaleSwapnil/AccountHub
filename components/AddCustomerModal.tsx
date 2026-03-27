@@ -4,13 +4,13 @@ import { useState } from "react";
 import { X, User, Mail, Phone, MapPin, FileEdit } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface AddCustomerModalProps {
+interface AddClientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (customer: any) => void;
 }
 
-export default function AddCustomerModal({ isOpen, onClose, onAdd }: AddCustomerModalProps) {
+export default function AddClientModal({ isOpen, onClose, onAdd }: AddClientModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,7 +26,7 @@ export default function AddCustomerModal({ isOpen, onClose, onAdd }: AddCustomer
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = "Customer name is required";
+    if (!formData.name) newErrors.name = "Client name is required";
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -40,67 +40,67 @@ export default function AddCustomerModal({ isOpen, onClose, onAdd }: AddCustomer
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="h-full w-full max-w-[500px] bg-white shadow-2xl animate-in slide-in-from-right duration-500 overflow-y-auto custom-scrollbar">
+      <div className="h-full w-full max-w-[480px] bg-bg-card shadow-2xl animate-in slide-in-from-right duration-500 overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-8 py-6 flex items-center justify-between">
+        <div className="sticky top-0 z-10 bg-bg-card border-b border-border px-6 py-5 flex items-center justify-between">
           <div>
-            <h2 className="text-[20px] font-black text-gray-900 tracking-tighter uppercase mb-1">Add New Customer</h2>
-            <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest">Create a professional profile</p>
+            <h2 className="text-[18px] font-semibold text-text-primary mb-0.5">Add New Client</h2>
+            <p className="text-[13px] text-text-muted">Create a new customer profile</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all cursor-pointer"
+            className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-page rounded-md transition-all cursor-pointer"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Section: Basic Info */}
-          <div className="space-y-5">
-             <div className="flex items-center gap-2 mb-2">
+          <div className="space-y-4">
+             <div className="flex items-center gap-2 mb-1">
                 <User size={16} className="text-primary" />
-                <span className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Primary Identity</span>
+                <span className="text-[14px] font-semibold text-text-primary">Primary Identity</span>
              </div>
              
              <div className="space-y-1.5">
-                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name / Company Name *</label>
+                <label className="text-[14px] font-medium text-text-primary">Full Name / Company Name *</label>
                 <input 
                   type="text"
                   placeholder="e.g. Acme Corp or Jane Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className={cn(
-                    "w-full h-11 px-4 bg-gray-50 border rounded-xl text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.name ? "border-negative" : "border-gray-200 focus:border-primary"
+                    "w-full h-10 px-3 bg-bg-card border rounded-md text-[14px] transition-all focus:outline-none focus:ring-1 focus:ring-primary",
+                    errors.name ? "border-negative" : "border-border-input focus:border-primary"
                   )}
                 />
-                {errors.name && <p className="text-[11px] text-negative font-bold ml-1 italic">{errors.name}</p>}
+                {errors.name && <p className="text-[12px] text-negative">{errors.name}</p>}
              </div>
 
-             <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                  <label className="text-[14px] font-medium text-text-primary">Email Address</label>
                   <div className="relative">
-                    <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                     <input 
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full h-10 pl-9 pr-3 bg-bg-card border border-border-input rounded-md text-[14px] transition-all focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
+                  <label className="text-[14px] font-medium text-text-primary">Phone Number</label>
                   <div className="relative">
-                    <Phone size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                     <input 
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-xl text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full h-10 pl-9 pr-3 bg-bg-card border border-border-input rounded-md text-[14px] transition-all focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </div>
@@ -108,48 +108,48 @@ export default function AddCustomerModal({ isOpen, onClose, onAdd }: AddCustomer
           </div>
 
           {/* Section: Details */}
-          <div className="space-y-5">
-             <div className="flex items-center gap-2 mb-2">
-                <MapPin size={16} className="text-secondary" />
-                <span className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Billing Address</span>
+          <div className="space-y-4">
+             <div className="flex items-center gap-2 mb-1">
+                <MapPin size={16} className="text-text-secondary" />
+                <span className="text-[14px] font-semibold text-text-primary">Billing Address</span>
              </div>
              <textarea 
                placeholder="Street, City, State, ZIP..."
                rows={3}
                value={formData.address}
                onChange={(e) => setFormData({...formData, address: e.target.value})}
-               className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary resize-none"
+               className="w-full p-3 bg-bg-card border border-border-input rounded-md text-[14px] transition-all focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none"
              />
           </div>
 
-          <div className="space-y-5 pt-4">
-             <div className="flex items-center gap-2 mb-2">
-                <FileEdit size={16} className="text-accent-4" />
-                <span className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Internal Notes</span>
+          <div className="space-y-4">
+             <div className="flex items-center gap-2 mb-1">
+                <FileEdit size={16} className="text-text-secondary" />
+                <span className="text-[14px] font-semibold text-text-primary">Internal Notes</span>
              </div>
              <textarea 
                placeholder="Special pricing, custom payment terms, etc..."
                rows={4}
                value={formData.notes}
                onChange={(e) => setFormData({...formData, notes: e.target.value})}
-               className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-accent-4/20 focus:border-accent-4 resize-none"
+               className="w-full p-3 bg-bg-card border border-border-input rounded-md text-[14px] transition-all focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none"
              />
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-10 border-t border-gray-100 flex items-center justify-end gap-3 sticky bottom-0 bg-white pb-8 mt-auto">
+          <div className="pt-6 border-t border-border flex items-center justify-end gap-3 sticky bottom-0 bg-bg-card pb-6 mt-auto">
              <button 
                type="button"
                onClick={onClose}
-               className="px-6 h-12 text-[12px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors"
+               className="px-4 h-10 text-[14px] font-medium text-text-muted hover:text-text-primary transition-colors"
              >
                Discard
              </button>
              <button 
                type="submit"
-               className="px-8 h-12 bg-primary text-white text-[12px] font-black uppercase tracking-widest rounded-xl hover:bg-primary-dark transition-all shadow-lg active:scale-95"
+               className="px-5 h-10 bg-primary text-white text-[14px] font-semibold rounded-md hover:bg-primary-dark transition-all active:scale-[0.98]"
              >
-               Add Customer Profile
+               Add Client
              </button>
           </div>
         </form>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { RotateCcw, Filter, Download } from "lucide-react";
+import { RotateCcw, Filter, Download, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReportFiltersProps {
   onExport?: () => void;
@@ -22,100 +23,95 @@ export default function ReportFilters({ onExport }: ReportFiltersProps) {
 
   return (
     <div
-      className="bg-bg-card rounded-[var(--radius-card)] border border-border p-5"
+      className="bg-bg-card rounded-xl border border-border p-5"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-primary" />
           <h3 className="text-[14px] font-semibold text-text-primary">
-            Report Filters
+            Report Parameters
           </h3>
         </div>
         <button
           onClick={onExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-accent-1 border border-accent-1/30 rounded-[var(--radius-button)] hover:bg-accent-1/5 transition-colors duration-200 cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-text-secondary border border-border rounded-md hover:bg-bg-page transition-all active:scale-[0.98]"
         >
-          <Download size={13} />
-          Export PDF / CSV
+          <Download size={14} className="text-text-muted" />
+          Export
         </button>
       </div>
 
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="flex flex-wrap items-end gap-5">
         {/* Report Period */}
         <div className="flex flex-col gap-1.5 min-w-[180px]">
-          <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
-            Report Period
+          <label className="text-[14px] font-medium text-text-primary px-0.5">
+            Reporting Period
           </label>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="h-9 px-3 text-[13px] bg-bg-input border border-border-input rounded-[var(--radius-input)] text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 appearance-none cursor-pointer"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236D6E71' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 10px center",
-            }}
-          >
-            <option value="this-month">This Month</option>
-            <option value="last-month">Last Month</option>
-            <option value="this-quarter">This Quarter</option>
-            <option value="last-quarter">Last Quarter</option>
-            <option value="this-year">This Fiscal Year</option>
-            <option value="last-year">Last Fiscal Year</option>
-            <option value="custom">Custom</option>
-          </select>
+          <div className="relative group">
+            <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-primary transition-colors" />
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="w-full h-10 pl-9 pr-8 text-[14px] bg-bg-card border border-border-input rounded-md text-text-primary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+            >
+              <option value="this-month">This Month</option>
+              <option value="last-month">Last Month</option>
+              <option value="this-quarter">This Quarter</option>
+              <option value="last-quarter">Last Quarter</option>
+              <option value="this-year">This Year</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
         </div>
 
         {/* From Date */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+          <label className="text-[14px] font-medium text-text-primary px-0.5">
             From
           </label>
           <input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="h-9 px-3 text-[13px] bg-bg-input border border-border-input rounded-[var(--radius-input)] text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200"
+            className="h-10 px-3 text-[13px] bg-bg-card border border-border-input rounded-md text-text-primary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           />
         </div>
 
         {/* To Date */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+          <label className="text-[14px] font-medium text-text-primary px-0.5">
             To
           </label>
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="h-9 px-3 text-[13px] bg-bg-input border border-border-input rounded-[var(--radius-input)] text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200"
+            className="h-10 px-3 text-[13px] bg-bg-card border border-border-input rounded-md text-text-primary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           />
         </div>
 
         {/* Accounting Method */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+          <label className="text-[14px] font-medium text-text-primary px-0.5">
             Accounting Method
           </label>
-          <div className="flex h-9 border border-border-input rounded-[var(--radius-input)] overflow-hidden">
+          <div className="flex h-10 bg-bg-page p-1 rounded-lg border border-border w-[180px]">
             <button
               onClick={() => setMethod("cash")}
-              className={`px-4 text-[12.5px] font-medium transition-all duration-200 cursor-pointer ${
-                method === "cash"
-                  ? "bg-primary text-white"
-                  : "bg-bg-input text-text-secondary hover:bg-bg-page"
-              }`}
+              className={cn(
+                "flex-1 text-[13px] font-medium rounded-md transition-all",
+                method === "cash" ? "bg-bg-card text-text-primary shadow-sm border border-border" : "text-text-muted hover:text-text-secondary"
+              )}
             >
               Cash
             </button>
             <button
               onClick={() => setMethod("accrual")}
-              className={`px-4 text-[12.5px] font-medium border-l border-border-input transition-all duration-200 cursor-pointer ${
-                method === "accrual"
-                  ? "bg-primary text-white"
-                  : "bg-bg-input text-text-secondary hover:bg-bg-page"
-              }`}
+              className={cn(
+                "flex-1 text-[13px] font-medium rounded-md transition-all",
+                method === "accrual" ? "bg-bg-card text-text-primary shadow-sm border border-border" : "text-text-muted hover:text-text-secondary"
+              )}
             >
               Accrual
             </button>
@@ -123,18 +119,16 @@ export default function ReportFilters({ onExport }: ReportFiltersProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-3 ml-auto">
           <button
             onClick={handleReset}
-            className="h-9 px-4 flex items-center gap-1.5 text-[12.5px] font-medium text-text-secondary border border-border rounded-[var(--radius-button)] hover:bg-bg-page transition-colors duration-200 cursor-pointer"
+            className="h-10 px-4 flex items-center gap-2 text-[14px] font-medium text-text-muted border border-border rounded-md hover:bg-bg-page transition-all"
           >
-            <RotateCcw size={13} />
+            <RotateCcw size={14} />
             Reset
           </button>
-          <button className="h-9 px-5 text-[12.5px] font-semibold text-white bg-primary rounded-[var(--radius-button)] hover:bg-primary-dark transition-colors duration-200 cursor-pointer"
-            style={{ boxShadow: "0 2px 6px rgba(139, 197, 61, 0.3)" }}
-          >
-            Apply
+          <button className="h-10 px-5 text-[14px] font-semibold text-white bg-primary rounded-md hover:bg-primary-dark transition-all active:scale-[0.98]">
+            Run Report
           </button>
         </div>
       </div>

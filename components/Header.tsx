@@ -37,27 +37,30 @@ export default function Header({ title }: HeaderProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 bg-bg-card/80 backdrop-blur-md border-b border-border">
-      <div className="flex items-center justify-between px-8 py-4">
+    <header className="sticky top-0 z-20 bg-bg-card border-b border-border">
+      <div className="flex items-center justify-between px-6 py-4">
         {/* Left: Date/Time & Title */}
         <div>
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[12px] text-primary font-semibold">
+            <span className="text-[12px] text-text-muted">
               {currentDate}
             </span>
-            <span className="text-[12px] text-text-muted">{currentTime}</span>
+            <span className="text-[12px] text-text-muted tabular-nums">{currentTime}</span>
           </div>
-          <h2 className="text-[22px] font-bold text-text-primary tracking-tight">
+          <h2 className="text-[24px] font-bold text-text-primary tracking-tight">
             {title}
           </h2>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3">
-          {/* Notification Bell */}
-          <button className="relative p-2.5 rounded-[var(--radius-input)] hover:bg-bg-page transition-colors duration-200 cursor-pointer">
-            <Bell size={19} className="text-text-secondary" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-bg-card" />
+          <button className="flex items-center justify-center w-10 h-10 bg-bg-card hover:bg-bg-page border border-border rounded-md text-text-muted transition-all group">
+            <Bell size={18} className="group-hover:text-primary" />
+          </button>
+          
+          <button className="flex items-center gap-2 px-4 h-10 bg-primary hover:bg-primary-dark text-white text-[14px] font-semibold rounded-md transition-all active:scale-[0.98]">
+            <Sparkles size={16} />
+            History
           </button>
         </div>
       </div>

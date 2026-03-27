@@ -22,7 +22,7 @@
   --color-warning: #F68C1F;
   --color-warning-bg: #FAC086;
 
-  /* Surfaces */
+  /* Surfaces — matches reference #F9FAFB feel */
   --color-bg-page: #f7f8fa;
   --color-bg-card: #ffffff;
   --color-bg-sidebar: #ffffff;
@@ -42,19 +42,19 @@
   --color-text-muted: #9ca3af;
   --color-text-on-primary: #ffffff;
 
-  /* Shadows */
+  /* Shadows — very subtle, reference-matched */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-sidebar: 2px 0 8px rgba(0, 0, 0, 0.04);
   --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
 
-  /* Fonts */
+  /* Fonts — Inter as primary, matching reference */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* Spacing */
-  --radius-card: 14px;
-  --radius-input: 10px;
-  --radius-button: 10px;
+  /* Geometry — reference uses rounded-xl (12px) for cards, rounded-md (6px) for inputs/buttons */
+  --radius-card: 12px;
+  --radius-input: 6px;
+  --radius-button: 6px;
 }
 
 /* Base resets */
@@ -70,6 +70,8 @@ body {
   background: var(--color-bg-page);
   color: var(--color-text-primary);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   font-feature-settings: "tnum" on, "lnum" on, "cv05" on;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
