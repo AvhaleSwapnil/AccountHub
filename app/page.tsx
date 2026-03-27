@@ -97,40 +97,34 @@ export default function DashboardPage() {
             return (
               <div
                 key={i}
-                className={`bg-bg-card rounded-[var(--radius-card)] border border-border p-6 transition-all duration-300 hover:translate-y-[-2px] ${isLoading ? "opacity-0" : "opacity-100"
+                className={`bg-white rounded-[12px] border border-gray-100 p-6 transition-all duration-300 hover:shadow-md ${isLoading ? "opacity-0" : "opacity-100"
                   }`}
                 style={{
-                  boxShadow: "var(--shadow-card)",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
                   transitionDelay: `${i * 100}ms`,
-                  borderLeft: `4px solid ${stat.color}`,
                 }}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <span className="text-[12px] font-bold text-text-muted uppercase tracking-widest">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[15px] text-gray-900">
                     {stat.label}
                   </span>
-                  <div
-                    className="w-10 h-10 rounded-[12px] flex items-center justify-center shadow-sm"
-                    style={{ backgroundColor: `${stat.color}10` }}
-                  >
-                    <Icon size={18} style={{ color: stat.color }} />
-                  </div>
+                  <Icon size={18} style={{ color: stat.color }} strokeWidth={2.5} />
                 </div>
-                <p className="text-[26px] font-bold text-text-primary leading-none mb-2">
-                  {isLoading ? (
-                    <span className="skeleton inline-block h-8 w-24 rounded-md" />
-                  ) : (
-                    stat.value
-                  )}
-                </p>
-                <div className="flex items-center gap-1.5">
-                  {stat.trend === "up" && <ArrowUpRight size={14} className="text-primary font-bold" />}
-                  {stat.trend === "down" && <ArrowDownRight size={14} className="text-negative font-bold" />}
-                  <span className={`text-[12px] font-bold ${stat.trend === "up" ? "text-primary" : stat.trend === "down" ? "text-negative" : "text-text-muted"
-                    }`}>
-                    {stat.change}
-                  </span>
-                  <span className="text-[11px] text-text-muted font-medium ml-1">vs last month</span>
+
+                <div className="flex flex-col gap-1">
+                  <p className="text-[20px] font-black text-gray-900 leading-none">
+                    {isLoading ? (
+                      <span className="skeleton inline-block h-8 w-24 rounded-md" />
+                    ) : (
+                      stat.value
+                    )}
+                  </p>
+
+                  <div className="flex items-center gap-1">
+                    <span className="text-[12px] text-gray-400 font-medium">
+                      {stat.change} from last month
+                    </span>
+                  </div>
                 </div>
               </div>
             );
