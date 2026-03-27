@@ -40,7 +40,7 @@ export default function Sidebar() {
           </div>
           <div>
             <h1 className="text-[16px] font-bold text-text-primary tracking-tight leading-tight">
-              ACCOUNT<span className="text-primary">HUB</span>
+              DATA<span className="text-primary">HUB</span>
             </h1>
             <p className="text-[11px] text-text-muted leading-none mt-0.5">Sage Healthy RCM</p>
           </div>
