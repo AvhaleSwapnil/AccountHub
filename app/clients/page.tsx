@@ -32,23 +32,16 @@ export default function CustomersPage() {
   const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleAddCustomer = (newCustomer: any) => {
-    const customer = {
-      ...newCustomer,
-      id: `CUST-${Math.floor(Math.random() * 9000) + 1000}`,
-      status: "active",
-      balance: 0,
-      totalSpent: 0,
-      lastOrder: new Date().toISOString()
-    };
-    setCustomers([customer, ...customers]);
+    console.log("add customer");
+
   };
 
   const handleExportCSV = () => {
     exportToCSV(
       filteredCustomers,
-      ["ID", "Name", "Email", "Phone", "Status", "Balance", "Lifetime Spent", "Last Invoice Date"],
+      ["ID", "Name", "Email", "Phone", "Status", "Balance", "Last Updated", "Created Date"],
       "customers_export",
-      (c) => [c.id, c.name, c.email, c.phone, c.status, c.balance, c.totalSpent, c.lastInvoice]
+      (c: any) => [c.id, c.name, c.email, c.phone, c.status, c.balance, c.lastUpdated, c.createdDate]
     );
   };
 
@@ -67,7 +60,7 @@ export default function CustomersPage() {
 
         {/* Top Header / Action Row */}
         <div className="flex items-center justify-between">
-          <h1 className="text-[18px] font-semibold text-text-primary">Client Directory</h1>
+          <h1 className="text-[24px] font-bold text-text-primary">Clients</h1>
           <div className="flex items-center gap-3">
             <button
               onClick={handleExportCSV}
@@ -122,7 +115,7 @@ export default function CustomersPage() {
                     <th className="text-left text-[14px] font-medium text-text-muted py-3 px-6">Name & ID</th>
                     <th className="text-left text-[14px] font-medium text-text-muted py-3 px-4">Contact</th>
                     <th className="text-right text-[14px] font-medium text-text-muted py-3 px-4">Balance</th>
-                    <th className="text-right text-[14px] font-medium text-text-muted py-3 px-4">Lifetime Spent</th>
+                    <th className="text-right text-[14px] font-medium text-text-muted py-3 px-4">Last Updated</th>
                     <th className="text-center text-[14px] font-medium text-text-muted py-3 px-4">Status</th>
                     <th className="w-12" />
                   </tr>
@@ -153,7 +146,7 @@ export default function CustomersPage() {
                         </td>
                         <td className="py-3 px-4 text-right tabular-nums">
                           <span className="text-[14px] text-text-primary">
-                            {formatCurrency(customer.totalSpent)}
+                            {customer.lastUpdated}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-center">

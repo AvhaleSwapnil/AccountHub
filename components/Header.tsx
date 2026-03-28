@@ -41,15 +41,12 @@ export default function Header({ title }: HeaderProps) {
       <div className="flex items-center justify-between px-6 py-4">
         {/* Left: Date/Time & Title */}
         <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[12px] text-text-muted">
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] text-text-muted font-medium">
               {currentDate}
             </span>
-            <span className="text-[12px] text-text-muted tabular-nums">{currentTime}</span>
+            <span className="text-[13px] text-text-muted tabular-nums font-medium">{currentTime}</span>
           </div>
-          <h2 className="text-[24px] font-bold text-text-primary tracking-tight">
-            {title}
-          </h2>
         </div>
 
         {/* Right: Actions */}

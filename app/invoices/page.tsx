@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import { SkeletonTable } from "@/components/SkeletonLoader";
-import { customersData } from "@/data/customers";
+import { useCustomers } from "@/hooks/useCustomers";
 import { Plus, MoreHorizontal, Download, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import AdvancedFilterToolbar from "@/components/AdvancedFilterToolbar";
@@ -16,6 +16,7 @@ const ITEMS_PER_PAGE = 10;
 
 export default function InvoicesPage() {
   const { invoices, isLoading, error } = useInvoices();
+  const { customers } = useCustomers();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -60,7 +61,7 @@ export default function InvoicesPage() {
 
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-[18px] font-semibold text-text-primary">Accounts Receivable</h1>
+          <h1 className="text-[24px] font-bold text-text-primary">Invoices</h1>
           <div className="flex items-center gap-3">
             <button
               onClick={handleExportCSV}
@@ -101,7 +102,7 @@ export default function InvoicesPage() {
             { label: "Custom Range", value: "custom" }
           ]}
           showCustomerFilter={true}
-          customerOptions={customersData.map(c => ({ label: c.name, value: c.name }))}
+          customerOptions={customers.map((c: any) => ({ label: c.name, value: c.name }))}
         />
 
         {/* Table */}

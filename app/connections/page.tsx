@@ -105,6 +105,8 @@ export default function ConnectionsPage() {
     <>
       <Header title="Manage Connection" />
       <div className="flex-1 p-6 space-y-5">
+        <h1 className="text-[24px] font-bold text-text-primary">Manage Connection</h1>
+        
         {/* Main Status Card */}
         <div className="bg-bg-card rounded-xl border border-border overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
           <div className={cn("px-6 py-3 flex items-center justify-between border-b-2", 

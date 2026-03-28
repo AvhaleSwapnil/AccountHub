@@ -15,6 +15,16 @@ import {
   PieChart,
   Search,
   ChevronDown,
+  Building2,
+  CreditCard,
+  Scale,
+  RefreshCw,
+  PiggyBank,
+  ArrowDownToLine,
+  Package,
+  ArrowUpFromLine,
+  Landmark,
+  Users
 } from "lucide-react";
 import {
   BarChart,
@@ -27,42 +37,9 @@ import {
   Legend,
   Cell,
 } from "recharts";
-
-const stats = [
-  {
-    label: "Total Revenue",
-    value: "$142,450.00",
-    change: "+12.5%",
-    trend: "up" as const,
-    icon: DollarSign,
-    color: "#8bc53d",
-  },
-  {
-    label: "Total Expenses",
-    value: "$95,230.50",
-    change: "+4.2%",
-    trend: "down" as const,
-    icon: Wallet,
-    color: "#C62026",
-  },
-  {
-    label: "Net Profit",
-    value: "$47,219.50",
-    change: "+18.3%",
-    trend: "up" as const,
-    icon: TrendingUp,
-    color: "#00648F",
-  },
-  {
-    label: "Outstanding Invoices",
-    value: "$28,450.75",
-    change: "6 invoices",
-    trend: "neutral" as const,
-    icon: Receipt,
-    color: "#F68C1F",
-  },
-];
-
+import { fetchDashboardKPIs } from "@/services/reportService";
+import { fetchCustomers } from "@/services/customerService";
+import { fetchInvoices } from "@/services/invoiceService";
 const chartData = [
   { name: "Jan", revenue: 65, expenses: 40 },
   { name: "Feb", revenue: 45, expenses: 35 },
@@ -72,31 +49,93 @@ const chartData = [
   { name: "Jun", revenue: 95, expenses: 60 },
 ];
 
-const recentInvoices = [
-  { id: "INV-2026-0042", customer: "Kestnerphysmed, LLC", amount: 12450.0, status: "open" },
-  { id: "INV-2026-0031", customer: "Metro Orthopedic Group", amount: 22100.0, status: "open" },
-  { id: "INV-2026-0012", customer: "Restore Muscle & Joint", amount: 8320.5, status: "open" },
-  { id: "INV-2026-0009", customer: "Health First Chiro", amount: 9500.0, status: "overdue" },
-  { id: "INV-2026-0005", customer: "Pinnacle Sports Med", amount: 5780.25, status: "open" },
-];
-
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const [dynamicStats, setDynamicStats] = useState<any[]>([]);
+  const [customersData, setCustomersData] = useState<any[]>([]);
+  const [invoicesData, setInvoicesData] = useState<any[]>([]);
 
   useEffect(() => {
     setIsClient(true);
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    let isMounted = true;
+
+    async function loadAllData() {
+      try {
+        const [kpiData, custsData, invsData] = await Promise.all([
+          fetchDashboardKPIs(),
+          fetchCustomers(),
+          fetchInvoices()
+        ]);
+
+        if (isMounted) {
+          const custs = Array.isArray(custsData?.QueryResponse?.Customer) ? custsData.QueryResponse.Customer :
+            Array.isArray(custsData?.data?.QueryResponse?.Customer) ? custsData.data.QueryResponse.Customer : 
+            (Array.isArray(custsData) ? custsData : []);
+            
+          const invs = Array.isArray(invsData?.QueryResponse?.Invoice) ? invsData.QueryResponse.Invoice :
+            Array.isArray(invsData?.data?.QueryResponse?.Invoice) ? invsData.data.QueryResponse.Invoice : 
+            (Array.isArray(invsData) ? invsData : []);
+
+          setCustomersData(custs);
+          setInvoicesData(invs);
+
+          let totalRevenue = 0;
+          let outstandingCount = 0;
+
+          invs.forEach((inv: any) => {
+            const amt = inv.TotalAmt || inv.amount || 0;
+            const bal = inv.Balance || inv.balance || 0;
+            totalRevenue += amt;
+            if (bal > 0 && (inv.status !== "paid")) outstandingCount++;
+          });
+
+          const totalCustomers = custs.length;
+
+          const baseMap = kpiData.map(stat => {
+            if (stat.label === "Total Revenue") {
+              return { ...stat, value: "$" + totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) };
+            }
+            if (stat.label === "Outstanding Invoices") {
+              return { ...stat, value: outstandingCount.toString() + " invoices" };
+            }
+            return stat;
+          });
+
+          if (!baseMap.some(s => s.label === "Total Customers")) {
+            baseMap.splice(3, 0, {
+              label: "Total Customers",
+              value: totalCustomers.toString(),
+              change: "Active",
+              trend: "neutral" as const,
+              icon: Users,
+              color: "#00B0F0"
+            });
+          }
+
+          setDynamicStats(baseMap);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadAllData();
+
+    return () => { isMounted = false; };
   }, []);
 
   return (
     <>
       <Header title="Dashboard" />
       <div className="flex-1 p-6 space-y-6">
+        <h1 className="text-[24px] font-bold text-text-primary">Dashboard</h1>
+
         {/* Stats Row */}
-        <div className="grid grid-cols-4 gap-4">
-          {stats.map((stat, i) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {dynamicStats.map((stat, i) => {
             const Icon = stat.icon;
             return (
               <div
@@ -260,7 +299,7 @@ export default function DashboardPage() {
                 <thead>
                   <tr className="border-b border-border bg-bg-page/50">
                     <th className="py-3 px-4 text-[14px] font-medium text-text-muted">ID</th>
-                    <th className="py-3 px-4 text-[14px] font-medium text-text-muted">Customer Name</th>
+                    <th className="py-3 px-4 text-[14px] font-medium text-text-muted">Client Name</th>
                     <th className="py-3 px-4 text-[14px] font-medium text-text-muted">Reference</th>
                     <th className="py-3 px-4 text-[14px] font-medium text-text-muted text-right">Amount</th>
                     <th className="py-3 px-4 text-[14px] font-medium text-text-muted">Due Date</th>
@@ -273,35 +312,44 @@ export default function DashboardPage() {
                       <tr key={i}><td colSpan={6} className="py-4 px-4"><div className="skeleton h-8 w-full rounded-md" /></td></tr>
                     ))
                   ) : (
-                    recentInvoices.map((inv, i) => (
+                    invoicesData.slice(0, 5).map((inv: any, i: number) => {
+                      const amount = inv.TotalAmt || inv.amount || 0;
+                      const balance = inv.Balance || inv.balance || 0;
+                      let status = inv.status || "open";
+                      if (inv.TotalAmt !== undefined) {
+                        status = balance > 0 ? "open" : "paid";
+                      }
+                      
+                      return (
                       <tr key={i} className="group hover:bg-bg-page/50 transition-colors">
                         <td className="py-3 px-4 text-[14px] font-medium text-text-primary">
-                          {inv.id}
+                          {inv.DocNumber || inv.id || `INV-00${i+1}`}
                         </td>
                         <td className="py-3 px-4 text-[14px] text-text-secondary">
-                          {inv.customer}
+                          {inv.CustomerRef?.name || inv.customer || "Unknown Client"}
                         </td>
                         <td className="py-3 px-4 text-[14px] text-text-muted">
                           Standard Billing
                         </td>
                         <td className="py-3 px-4 text-right text-[14px] font-semibold text-text-primary tabular-nums">
-                          ${inv.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          ${amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                         </td>
                         <td className="py-3 px-4 text-[14px] text-text-secondary">
-                          Apr 15, 2026
+                          {inv.DueDate || inv.dueDate || inv.date || "N/A"}
                         </td>
                         <td className="py-3 px-4 text-center">
                           <span className={cn(
-                            "inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium capitalize",
-                            inv.status === "paid" || inv.status === "open"
-                              ? "bg-primary-light/40 text-primary-dark"
-                              : "bg-negative-bg text-negative"
+                            "inline-flex items-center justify-center px-2.5 py-1 rounded-md text-[12px] font-medium capitalize min-w-[70px]",
+                            status === "paid" ? "bg-[#8bc53d] text-white" : "",
+                            status === "open" ? "bg-[#00648F] text-white" : "",
+                            status === "overdue" ? "bg-[#C62026] text-white" : "",
+                            (!["paid", "open", "overdue"].includes(status)) ? "bg-[#6D6E71] text-white" : ""
                           )}>
-                            {inv.status}
+                            {status}
                           </span>
                         </td>
                       </tr>
-                    ))
+                    )})
                   )}
                 </tbody>
               </table>

@@ -5,20 +5,15 @@ import Header from "@/components/Header";
 import FinancialReport from "@/components/FinancialReport";
 import { Search, ChevronDown, FileCheck, FileSpreadsheet, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { balanceSheetData } from "@/data/balance-sheet";
-import { profitLossData } from "@/data/profit-loss";
-import { balanceSheetDetailData, profitLossDetailData } from "@/data/financial-details";
+import { useEffect } from "react";
+import { useCustomers } from "@/hooks/useCustomers";
+import { 
+  getBalanceSheet, 
+  getBalanceSheetDetail, 
+  getProfitAndLoss, 
+  getProfitAndLossDetail 
+} from "@/services/financialReportService";
 
-const clientsMock = [
-    { name: "Roach Family Chiropractic Clinic, LLC", id: 37 },
-    { name: "In-Line Family Chiropractic, P.A.", id: 39 },
-    { name: "Osage Chiropractic, PC", id: 90 },
-    { name: "100 Chiropractic Griffgood, PC", id: 91 },
-    { name: "Ryan Chiro Consulting, LLC", id: 93 },
-    { name: "TOR Wellness LLC & TOR Wellness Two, LLC", id: 94 },
-    { name: "Gillfillan Chiropractic, LLC", id: 95 },
-    { name: "The Wellness Way Fargo, PLLC", id: 96 },
-];
 
 export default function ReportsPage() {
     const [selectedTab, setSelectedTab] = useState<"Balance Sheet" | "Profit & Loss">("Balance Sheet");
@@ -27,14 +22,41 @@ export default function ReportsPage() {
     const [dateRange, setDateRange] = useState("This Month");
     const [customRange, setCustomRange] = useState({ start: "2026-03-01", end: "2026-03-27" });
     const [accountingMethod, setAccountingMethod] = useState("Accrual");
-    const [selectedClient, setSelectedClient] = useState<number | null>(null);
+    const [selectedClient, setSelectedClient] = useState<string | null>(null);
     const [search, setSearch] = useState("");
 
-    const toggleClient = (id: number) => {
+    const [balanceSheetData, setBalanceSheetData] = useState<any[]>([]);
+    const [profitLossData, setProfitLossData] = useState<any[]>([]);
+    const [balanceSheetDetailData, setBalanceSheetDetailData] = useState<any>({ groups: [] });
+    const [profitLossDetailData, setProfitLossDetailData] = useState<any>({ groups: [] });
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { customers } = useCustomers();
+
+    useEffect(() => {
+        let isMounted = true;
+        Promise.all([
+            getBalanceSheet().catch(() => []),
+            getBalanceSheetDetail().catch(() => ({ groups: [] })),
+            getProfitAndLoss().catch(() => []),
+            getProfitAndLossDetail().catch(() => ({ groups: [] }))
+        ]).then(([bs, bsd, pl, pld]) => {
+            if (isMounted) {
+                setBalanceSheetData(bs);
+                setBalanceSheetDetailData(bsd);
+                setProfitLossData(pl);
+                setProfitLossDetailData(pld);
+                setIsLoading(false);
+            }
+        });
+        return () => { isMounted = false; };
+    }, []);
+
+    const toggleClient = (id: string) => {
         setSelectedClient(selectedClient === id ? null : id);
     };
 
-    const filteredClients = clientsMock.filter((c) =>
+    const filteredClients = customers.filter((c) =>
         c.name.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -97,6 +119,8 @@ export default function ReportsPage() {
             <Header title="Reports" />
 
             <div className="flex-1 p-6 overflow-y-auto">
+                <h1 className="text-[24px] font-bold text-text-primary mb-6">Financial Reports</h1>
+                
                 {/* Tabs — matching reference segmented style */}
                 <div className="flex gap-6 mb-6 border-b border-border pb-px">
                     {(["Balance Sheet", "Profit & Loss"] as const).map((tab) => (
@@ -312,7 +336,7 @@ export default function ReportsPage() {
                                     data={selectedTab === "Balance Sheet" ? balanceSheetData : profitLossData}
                                     detailedData={selectedTab === "Balance Sheet" ? balanceSheetDetailData : profitLossDetailData}
                                     title={`${selectedTab}`}
-                                    subtitle={`As of March 27, 2026 • ${selectedClient ? clientsMock.find(c => c.id === selectedClient)?.name : 'Consolidated'}`}
+                                    subtitle={`As of March 27, 2026 • ${selectedClient ? customers.find(c => c.id === selectedClient)?.name : 'Consolidated'}`}
                                     hideToolbar={true}
                                     initialViewMode={reportType.toLowerCase() as "summary" | "detail"}
                                     initialPeriod={dateRange}
