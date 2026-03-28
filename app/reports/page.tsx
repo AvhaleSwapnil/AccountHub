@@ -7,6 +7,7 @@ import { Search, ChevronDown, FileCheck, FileSpreadsheet, Download } from "lucid
 import { cn } from "@/lib/utils";
 import { balanceSheetData } from "@/data/balance-sheet";
 import { profitLossData } from "@/data/profit-loss";
+import { balanceSheetDetailData, profitLossDetailData } from "@/data/financial-details";
 
 const clientsMock = [
     { name: "Roach Family Chiropractic Clinic, LLC", id: 37 },
@@ -307,10 +308,16 @@ export default function ReportsPage() {
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div className="h-[700px] flex flex-col">
                                 <FinancialReport 
+                                    key={`${selectedTab}-${reportType}-${selectedClient}-${dateRange}-${accountingMethod}`}
                                     data={selectedTab === "Balance Sheet" ? balanceSheetData : profitLossData}
-                                    title={`${selectedTab} ${reportType}`}
+                                    detailedData={selectedTab === "Balance Sheet" ? balanceSheetDetailData : profitLossDetailData}
+                                    title={`${selectedTab}`}
                                     subtitle={`As of March 27, 2026 • ${selectedClient ? clientsMock.find(c => c.id === selectedClient)?.name : 'Consolidated'}`}
                                     hideToolbar={true}
+                                    initialViewMode={reportType.toLowerCase() as "summary" | "detail"}
+                                    initialPeriod={dateRange}
+                                    initialMethod={accountingMethod as "Accrual" | "Cash"}
+                                    initialCustomRange={customRange}
                                 />
                             </div>
                             

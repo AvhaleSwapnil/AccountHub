@@ -20,6 +20,10 @@ interface FinancialReportProps {
   title: string;
   subtitle?: string;
   hideToolbar?: boolean;
+  initialViewMode?: "summary" | "detail";
+  initialPeriod?: string;
+  initialMethod?: "Accrual" | "Cash";
+  initialCustomRange?: { start: string; end: string };
 }
 
 const ReportRow = ({ line, depth = 0 }: { line: FinancialLine; depth: number }) => {
@@ -91,11 +95,17 @@ const ReportRow = ({ line, depth = 0 }: { line: FinancialLine; depth: number }) 
   );
 };
 
-export default function FinancialReport({ data, detailedData, title, subtitle, hideToolbar }: FinancialReportProps) {
-  const [viewMode, setViewMode] = useState<"summary" | "detail">("summary");
-  const [period, setPeriod] = useState("This Month");
-  const [method, setMethod] = useState<"Accrual" | "Cash">("Accrual");
-  const [customRange, setCustomRange] = useState({ start: "2026-03-01", end: "2026-03-25" });
+export default function FinancialReport({ 
+  data, detailedData, title, subtitle, hideToolbar, 
+  initialViewMode = "summary",
+  initialPeriod = "This Month",
+  initialMethod = "Accrual",
+  initialCustomRange = { start: "2026-03-01", end: "2026-03-25" }
+}: FinancialReportProps) {
+  const [viewMode, setViewMode] = useState<"summary" | "detail">(initialViewMode);
+  const [period, setPeriod] = useState(initialPeriod);
+  const [method, setMethod] = useState<"Accrual" | "Cash">(initialMethod);
+  const [customRange, setCustomRange] = useState(initialCustomRange);
 
   const activeSubtitle = period === "Custom Range" ? `${customRange.start} - ${customRange.end}` : period;
 
