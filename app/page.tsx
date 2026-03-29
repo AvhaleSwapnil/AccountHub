@@ -44,6 +44,7 @@ import { fetchDashboardKPIs, fetchFinancialTrends } from "@/services/reportServi
 import { fetchCustomers } from "@/services/customerService";
 import { fetchInvoices } from "@/services/invoiceService";
 import { getProfitAndLoss } from "@/services/financialReportService";
+import { exportToCSV } from "@/lib/exportCSV";
 
 
 export default function DashboardPage() {
@@ -152,6 +153,15 @@ export default function DashboardPage() {
     return () => { isMounted = false; };
   }, []);
 
+  const handleExportTrendsCSV = () => {
+    exportToCSV(
+      chartDataState,
+      ["Month", "Revenue", "Expenses"],
+      "financial_trends",
+      (item) => [item.name, item.revenue.toFixed(2), item.expenses.toFixed(2)]
+    );
+  };
+
   return (
     <>
       <Header title="Dashboard" />
@@ -207,8 +217,12 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-[18px] font-semibold text-text-primary">Financial Trends</h3>
               <div className="flex items-center gap-2">
-                <button className="btn-secondary h-auto py-1.5 text-[13px]">Export PDF</button>
-                <button className="btn-primary h-auto py-1.5 text-[13px]">Full View</button>
+                <button 
+                  onClick={handleExportTrendsCSV}
+                  className="btn-secondary h-auto py-1.5 text-[13px]"
+                >
+                  Export CSV
+                </button>
               </div>
             </div>
 
@@ -391,7 +405,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3 px-4 text-center">
                             <div className={cn(
-                              "inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium capitalize min-w-[70px]",
+                              "inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium capitalize min-w-[70px]",
                               config.color
                             )}>
                               <StatusIcon size={12} />

@@ -6,6 +6,8 @@ export interface InvoiceFilters {
   statusFilter: string;
   dateFilter: string;
   customerFilter: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export function filterInvoices(invoices: Invoice[], filters: InvoiceFilters): Invoice[] {
@@ -20,11 +22,16 @@ export function filterInvoices(invoices: Invoice[], filters: InvoiceFilters): In
     if (filters.dateFilter !== "all" && inv.date) {
        const invDate = new Date(inv.date);
        const now = new Date();
-       if (filters.dateFilter === "this-month") {
-         matchesDate = invDate.getMonth() === now.getMonth() && invDate.getFullYear() === now.getFullYear();
-       } else if (filters.dateFilter === "last-month") {
-         matchesDate = invDate.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1);
-       }
+        if (filters.dateFilter === "this-month") {
+          matchesDate = invDate.getMonth() === now.getMonth() && invDate.getFullYear() === now.getFullYear();
+        } else if (filters.dateFilter === "last-month") {
+          matchesDate = invDate.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1);
+        } else if (filters.dateFilter === "custom" && filters.startDate && filters.endDate) {
+          const start = new Date(filters.startDate);
+          const end = new Date(filters.endDate);
+          end.setHours(23, 59, 59, 999);
+          matchesDate = invDate >= start && invDate <= end;
+        }
     }
 
     return matchesSearch && matchesStatus && matchesCustomer && matchesDate;

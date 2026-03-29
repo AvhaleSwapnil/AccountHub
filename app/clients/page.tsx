@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import { SkeletonTable } from "@/components/SkeletonLoader";
-import { Plus, MoreHorizontal, Download } from "lucide-react";
+import { Plus, MoreHorizontal, Download, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import AdvancedFilterToolbar from "@/components/AdvancedFilterToolbar";
 import AddCustomerModal from "@/components/AddCustomerModal";
@@ -45,12 +45,13 @@ export default function CustomersPage() {
     );
   };
 
-  const statusBadge = (status: string) => {
-    const styles: Record<string, string> = {
-      active: "bg-[#8bc53d] text-white border-transparent",
-      inactive: "bg-[#6D6E71] text-white border-transparent",
+  const statusConfig = (status: string) => {
+    const configs: Record<string, { label: string; icon: any; color: string }> = {
+      active: { label: "Active", icon: CheckCircle2, color: "bg-[#8bc53d] text-white border-transparent" },
+      inactive: { label: "Inactive", icon: FileText, color: "bg-[#6D6E71] text-white border-transparent" },
+      overdue: { label: "Overdue", icon: AlertCircle, color: "bg-[#C62026] text-white border-transparent" },
     };
-    return styles[status.toLowerCase()] || "bg-bg-page text-text-muted border-border";
+    return configs[status.toLowerCase()] || configs.active;
   };
 
   return (
@@ -94,7 +95,8 @@ export default function CustomersPage() {
           }}
           statusOptions={[
             { label: "Active", value: "active" },
-            { label: "Inactive", value: "inactive" }
+            { label: "Inactive", value: "inactive" },
+            { label: "Overdue", value: "overdue" }
           ]}
         />
 
@@ -150,12 +152,19 @@ export default function CustomersPage() {
                           </span>
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <span className={cn(
-                            "inline-block px-2.5 py-1 rounded-full text-[12px] font-medium capitalize",
-                            statusBadge(customer.status)
-                          )}>
-                            {customer.status}
-                          </span>
+                          {(() => {
+                            const config = statusConfig(customer.status);
+                            const StatusIcon = config.icon;
+                            return (
+                              <span className={cn(
+                                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium capitalize",
+                                config.color
+                              )}>
+                                <StatusIcon size={12} />
+                                {customer.status}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="py-3 px-4 text-center">
                           <button className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-page rounded-md transition-all cursor-pointer">

@@ -21,6 +21,8 @@ export default function InvoicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [customerFilter, setCustomerFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -28,7 +30,9 @@ export default function InvoicesPage() {
     searchTerm,
     statusFilter,
     dateFilter,
-    customerFilter
+    customerFilter,
+    startDate,
+    endDate
   });
 
   const totalPages = Math.ceil(filteredInvoices.length / ITEMS_PER_PAGE);
@@ -87,6 +91,8 @@ export default function InvoicesPage() {
             setSearchTerm("");
             setStatusFilter("all");
             setDateFilter("all");
+            setStartDate("");
+            setEndDate("");
             setCustomerFilter("all");
             setCurrentPage(1);
           }}
@@ -104,6 +110,36 @@ export default function InvoicesPage() {
           showCustomerFilter={true}
           customerOptions={customers.map((c: any) => ({ label: c.name, value: c.name }))}
         />
+
+        {/* Custom Date Range Inputs */}
+        {dateFilter === "custom" && (
+          <div className="flex items-center gap-4 card-base p-4 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[14px] text-text-muted">From:</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="h-10 px-3 bg-bg-card border border-border-input rounded-md text-[14px] text-text-primary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[14px] text-text-muted">To:</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="h-10 px-3 bg-bg-card border border-border-input rounded-md text-[14px] text-text-primary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Table */}
         {isLoading ? (

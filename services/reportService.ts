@@ -1,17 +1,172 @@
-import {
-  DollarSign,
-  Wallet,
-  TrendingUp,
-  Building2,
-  CreditCard,
-  Scale,
-  RefreshCw,
-  PiggyBank,
-  ArrowDownToLine,
-  Package,
-  ArrowUpFromLine,
+import { 
+  DollarSign, 
+  Wallet, 
+  TrendingUp, 
+  Building2, 
+  CreditCard, 
+  Scale, 
+  RefreshCw, 
+  PiggyBank, 
+  ArrowDownToLine, 
+  Package, 
+  ArrowUpFromLine, 
   Landmark,
 } from "lucide-react";
+
+import { FinancialLine } from "@/data/balance-sheet";
+import { DetailedFinancialData, FinancialGroup, AccountDetail, Transaction } from "@/data/financial-details";
+
+// --- Parsers for Summary Reports ---
+export function parseSummaryRows(rows: any[]): FinancialLine[] {
+  let result: FinancialLine[] = [];
+  if (!rows || !Array.isArray(rows)) return result;
+
+  for (const row of rows) {
+    if (row.type === "Section") {
+      const name = row.Header?.ColData?.[0]?.value || row.ColData?.[0]?.value || "Section";
+      const summaryCols = row.Summary?.ColData || [];
+      const totalStr = [...summaryCols].reverse().find((c: any) => c.value && !isNaN(parseFloat(c.value?.replace(/,/g, ""))))?.value || "0";
+      const totalAmount = parseFloat(totalStr?.replace(/,/g, "")) || 0;
+      
+      const children: FinancialLine[] = [];
+      if (row.Rows && row.Rows.Row) {
+        children.push(...parseSummaryRows(row.Rows.Row));
+      }
+      
+      if (row.Summary && children.length > 0) {
+        children.push({
+          id: `total-${row.group || Math.random().toString()}`,
+          name: row.Summary.ColData?.[0]?.value || `Total ${name}`,
+          amount: totalAmount,
+          type: "total"
+        });
+      }
+
+      result.push({
+        id: row.group || Math.random().toString(),
+        name,
+        amount: totalAmount,
+        type: "header",
+        children: children.length > 0 ? children : undefined
+      });
+    } else if (row.type === "Data") {
+      const name = row.ColData?.[0]?.value || "Unknown";
+      const valStr = row.ColData?.[1]?.value || "0";
+      result.push({
+        id: row.ColData?.[0]?.id || Math.random().toString(),
+        name,
+        amount: parseFloat(valStr?.replace(/,/g, "")) || 0,
+        type: "data"
+      });
+    }
+  }
+  return result;
+}
+
+// --- Parsers for Detail Reports ---
+const extractTransactions = (rowArray: any[], reportDate: string = "N/A"): Transaction[] => {
+  let txs: Transaction[] = [];
+  if (!rowArray) return txs;
+
+  for (const r of rowArray) {
+    if (r.type === "Data") {
+      const c = r.ColData || [];
+      const isSummary = c.length < 5;
+      const rawAmount = isSummary ? (c[c.length-1]?.value || "0") : (c[6]?.value || "0");
+      const rawBalance = isSummary ? (c[c.length-1]?.value || "0") : (c[7]?.value || "0");
+
+      txs.push({
+        id: Math.random().toString(),
+        date: isSummary ? "Sub-Total" : (c[0]?.value || reportDate),
+        type: isSummary ? "Summary" : (c[1]?.value || "Transaction"),
+        num: isSummary ? "" : (c[2]?.value || ""),
+        name: isSummary ? (c[0]?.value || "Total") : (c[3]?.value || "N/A"),
+        memo: isSummary ? "" : (c[4]?.value || ""),
+        split: isSummary ? "" : (c[5]?.value || ""),
+        amount: parseFloat(String(rawAmount).replace(/,/g, "")) || 0,
+        balance: parseFloat(String(rawBalance).replace(/,/g, "")) || 0
+      });
+    } else if (r.type === "Section" && r.Rows?.Row) {
+      txs.push(...extractTransactions(r.Rows.Row, reportDate));
+    }
+  }
+  return txs;
+};
+
+const findAccounts = (rows: any[], reportDate: string): AccountDetail[] => {
+  let accounts: AccountDetail[] = [];
+  if (!rows || !Array.isArray(rows)) return accounts;
+
+  for (const row of rows) {
+    if (row.type === "Section") {
+      const headerName = row.Header?.ColData?.[0]?.value || "General Account";
+      const summaryCols = row.Summary?.ColData || [];
+      const totalStr = [...summaryCols].reverse().find((c: any) => c.value && !isNaN(parseFloat(c.value?.replace(/,/g, ""))))?.value || "0";
+      const total = parseFloat(totalStr.replace(/,/g, "")) || 0;
+
+      if (row.Rows?.Row) {
+        const hasData = row.Rows.Row.some((r: any) => r.type === "Data");
+        const hasSections = row.Rows.Row.some((r: any) => r.type === "Section");
+
+        if (hasData) {
+          accounts.push({
+            id: Math.random().toString(),
+            name: headerName,
+            total,
+            transactions: extractTransactions(row.Rows.Row, reportDate)
+          });
+        }
+        if (hasSections) {
+          accounts.push(...findAccounts(row.Rows.Row, reportDate));
+        }
+      }
+    }
+  }
+  return accounts;
+};
+
+export function parseDetailRows(rows: any[], reportDate: string = "N/A"): DetailedFinancialData {
+  const groups: FinancialGroup[] = [];
+  if (!rows || !Array.isArray(rows)) return { groups };
+
+  for (const row of rows) {
+    if (row.type === "Section") {
+      const groupName = row.Header?.ColData?.[0]?.value || "Main Section";
+      const summaryCols = row.Summary?.ColData || [];
+      const totalStr = [...summaryCols].reverse().find((c: any) => c.value && !isNaN(parseFloat(c.value?.replace(/,/g, ""))))?.value || "0";
+      const total = parseFloat(totalStr.replace(/,/g, "")) || 0;
+
+      const accounts = findAccounts(row.Rows?.Row || [], reportDate);
+      
+      if (accounts.length > 0) {
+        groups.push({
+          id: Math.random().toString(),
+          name: groupName,
+          total,
+          accounts
+        });
+      } else if (row.Rows?.Row) {
+         const subGroupsData = parseDetailRows(row.Rows.Row, reportDate);
+         groups.push(...subGroupsData.groups);
+      }
+    }
+  }
+  const uniqueGroups = groups.filter((g, index, self) => 
+    index === self.findIndex((t) => t.name === g.name && t.total === g.total)
+  );
+  return { groups: uniqueGroups };
+}
+
+// Requirement 4: Explicit Helper Function
+export function parseBalanceSheet(data: any): FinancialLine[] {
+  const rows = data?.data?.Rows?.Row || data?.Rows?.Row || [];
+  return parseSummaryRows(rows);
+}
+
+export function parseProfitAndLoss(data: any): FinancialLine[] {
+  const rows = data?.data?.Rows?.Row || data?.Rows?.Row || [];
+  return parseSummaryRows(rows);
+}
 
 export async function fetchDashboardKPIs() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";

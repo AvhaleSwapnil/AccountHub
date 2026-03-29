@@ -201,12 +201,21 @@ export default function ReportsPage() {
                                         <div className="relative">
                                             <select 
                                                 value={dateRange}
-                                                onChange={(e) => setDateRange(e.target.value)}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setDateRange(val);
+                                                  if (val === "This Year") {
+                                                    const currentYear = new Date().getFullYear();
+                                                    const today = new Date().toISOString().split("T")[0];
+                                                    setCustomRange({ start: `${currentYear}-01-01`, end: today });
+                                                  }
+                                                }}
                                                 className="w-full h-10 pl-3 pr-10 bg-bg-card border border-border-input rounded-md text-[14px] text-text-primary appearance-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all cursor-pointer"
                                             >
                                                 <option>Today</option>
                                                 <option>This Month</option>
                                                 <option>This Quarter</option>
+                                                <option>This Year</option>
                                                 <option>Custom Range</option>
                                             </select>
                                             <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />

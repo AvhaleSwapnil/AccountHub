@@ -148,7 +148,15 @@ export default function FinancialReport({
                   <Calendar size={14} className="text-text-muted group-hover:text-primary transition-colors" />
                   <select
                     value={period}
-                    onChange={(e) => setPeriod(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPeriod(val);
+                      if (val === "This Year") {
+                        const currentYear = new Date().getFullYear();
+                        const today = new Date().toISOString().split("T")[0];
+                        setCustomRange({ start: `${currentYear}-01-01`, end: today });
+                      }
+                    }}
                     className="bg-transparent text-[14px] text-text-primary focus:outline-none cursor-pointer min-w-[120px]"
                   >
                     <option>Today</option>

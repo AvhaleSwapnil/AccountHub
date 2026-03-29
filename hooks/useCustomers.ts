@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchCustomers } from "@/services/customerService";
+import { fetchInvoices } from "@/services/invoiceService";
 import { Customer } from "@/data/customers";
 
 export function useCustomers() {
@@ -11,23 +12,49 @@ export function useCustomers() {
     let isMounted = true;
     async function loadCustomers() {
       try {
-        const response = await fetchCustomers();
-        const apiCustomers = Array.isArray(response?.QueryResponse?.Customer)
-          ? response.QueryResponse.Customer
-          : Array.isArray(response?.data?.QueryResponse?.Customer)
-            ? response.data.QueryResponse.Customer
-            : (Array.isArray(response) ? response : []);
+        const [custResponse, invResponse] = await Promise.all([
+          fetchCustomers(),
+          fetchInvoices().catch(() => ({ QueryResponse: { Invoice: [] } }))
+        ]);
 
-        const mappedCustomers = apiCustomers.map((c: any) => ({
-          id: c.Id || c.id,
-          name: c.DisplayName || c.FullyQualifiedName || c.GivenName || "Unknown",
-          email: c.PrimaryEmailAddr?.Address || c.email || "N/A",
-          phone: c.PrimaryPhone?.FreeFormNumber || c.phone || "N/A",
-          balance: parseFloat(c.Balance) || parseFloat(c.balance) || 0,
-          status: (parseFloat(c.Balance) > 0 || parseFloat(c.balance) > 0) ? "overdue" : (c.Active === false ? "inactive" : "active"),
-          lastUpdated: c.MetaData?.LastUpdatedTime ? new Date(c.MetaData.LastUpdatedTime).toLocaleDateString() : "N/A",
-          createdDate: c.MetaData?.CreateTime ? new Date(c.MetaData.CreateTime).toLocaleDateString() : "N/A",
-        }));
+        const apiInvs = Array.isArray(invResponse?.QueryResponse?.Invoice)
+          ? invResponse.QueryResponse.Invoice
+          : Array.isArray(invResponse?.data?.QueryResponse?.Invoice) 
+            ? invResponse.data.QueryResponse.Invoice 
+            : (Array.isArray(invResponse) ? invResponse : []);
+
+        const apiCustomers = Array.isArray(custResponse?.QueryResponse?.Customer)
+          ? custResponse.QueryResponse.Customer
+          : Array.isArray(custResponse?.data?.QueryResponse?.Customer)
+            ? custResponse.data.QueryResponse.Customer
+            : (Array.isArray(custResponse) ? custResponse : []);
+
+        const mappedCustomers = apiCustomers.map((c: any) => {
+          const customerName = c.DisplayName || c.FullyQualifiedName || "Unknown";
+          
+          // Check for overdue invoices for this specific customer
+          const hasOverdueInvoice = apiInvs.some((inv: any) => {
+            const invCustomer = inv.CustomerRef?.name || inv.customer;
+            const balance = parseFloat(inv.Balance) || parseFloat(inv.balance) || 0;
+            const dueDate = new Date(inv.DueDate || inv.dueDate);
+            return (
+              invCustomer === customerName &&
+              balance > 0 &&
+              dueDate < new Date()
+            );
+          });
+
+          return {
+            id: c.Id || c.id,
+            name: customerName,
+            email: c.PrimaryEmailAddr?.Address || c.email || "N/A",
+            phone: c.PrimaryPhone?.FreeFormNumber || c.phone || "N/A",
+            balance: parseFloat(c.Balance) || parseFloat(c.balance) || 0,
+            status: hasOverdueInvoice ? "overdue" : (c.Active === false ? "inactive" : "active"),
+            lastUpdated: c.MetaData?.LastUpdatedTime ? new Date(c.MetaData.LastUpdatedTime).toLocaleDateString() : "N/A",
+            createdDate: c.MetaData?.CreateTime ? new Date(c.MetaData.CreateTime).toLocaleDateString() : "N/A",
+          };
+        });
 
         if (isMounted) {
           setCustomers(mappedCustomers);
